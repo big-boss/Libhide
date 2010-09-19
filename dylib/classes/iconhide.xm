@@ -314,10 +314,10 @@ static bool					global_switcherShowing = NO;
 
 //*******************************************************************************************************
 //*******************************************************************************************************
-- (void)dismissSwitcher
+- (void)_dismissSwitcher:(double)switcher
 {
-	global_switcherShowing = NO;
 	%orig;
+	global_switcherShowing = NO;
 }
 
 %end // SBUIController
