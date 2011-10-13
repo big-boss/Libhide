@@ -8,6 +8,11 @@ typedef enum _FILE_ACCESS_TYPE
 	FILE_WRITE,
 	FILE_APPEND
 } FILE_ACCESS_TYPE;
+
+BOOL IsIconHiddenDisplayId(NSString* BundleId);
+BOOL HideIconViaDisplayId(NSString* BundleId);
+BOOL UnHideIconViaDisplayId(NSString* BundleId);
+
 BOOL UnHideIconCharPtr(char* Path);
 BOOL HideIconCharPtr(char* Path);
 BOOL IsIconHiddenCharPtr(char* Path);
