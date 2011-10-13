@@ -64,6 +64,7 @@ NSLog(@"[%@ %s] bt=%x", [[self class] description], sel_getName(sel), bt); \
 
 @interface SBIconModel : NSObject
 - (void)setVisibilityOfIconsWithVisibleTags:(id)visibleTags hiddenTags:(id)tags;
+- (void)relayout;
 @end
 @interface SBIconModel (Firmware2x3x)
 @property(readonly, retain) NSMutableArray *iconLists;
@@ -208,7 +209,7 @@ static bool					global_switcherShowing = NO;
 
 	if(global_switcherShowing == NO)
 	{
-		if(SYS_VER_4(global_SystemVersion))
+		if(global_SystemVersion >= 4.0f)
 		{
 			//return %orig;
 			if(global_SearchController != nil)
@@ -429,6 +430,25 @@ static void IconHide_HiddenIconsChanged(CFNotificationCenterRef center,
 		if([theApp respondsToSelector:@selector(relaunchSpringBoard)])
 		{
 			[theApp relaunchSpringBoard];
+		}
+	}
+	
+	else if([[[UIDevice currentDevice] systemVersion] hasPrefix:@"5."])
+	{
+		LoadHiddenIconList();
+		
+		Class SBIconModel = objc_getClass("SBIconModel");
+		SBIconModel* iconModel = (SBIconModel*)[SBIconModel sharedInstance];
+		NSSet** _visibleIconTags = (NSSet**)MSHookIvar(iconModel, "_visibleIconTags");
+		NSSet** _hiddenIconTags  = (NSSet**)MSHookIvar(iconModel, "_hiddenIconTags");
+		if(*_visibleIconTags != NULL && *_hiddenIconTags != NULL &&
+		    _visibleIconTags != NULL && _hiddenIconTags!=NULL)
+		{
+			global_Rehide = YES;
+			NSSet* visibleIconTags = [NSSet setWithSet:*_visibleIconTags];
+			NSSet* hiddenIconTags = [NSSet setWithSet:*_hiddenIconTags];
+			[iconModel setVisibilityOfIconsWithVisibleTags:visibleIconTags  hiddenTags:hiddenIconTags];
+			[iconModel relayout];
 		}
 	}
 
